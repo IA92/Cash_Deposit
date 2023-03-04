@@ -17,4 +17,4 @@ def generate_pdf(filename):
         del excel
 
 if __name__ == "__main__":
-    generate_pdf("D:\Data\Personal\Documents\Others\HunterBadminton\Data\Bank 2023 - NewFormat - 27Jan23")
+    generate_pdf(os.getcwd() + "\Data\Bank 2023 - NewFormat - 27Jan23")

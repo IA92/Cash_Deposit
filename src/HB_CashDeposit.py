@@ -3,6 +3,8 @@ from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import Alignment, Font
 from datetime import datetime
 
+import os
+
 def generate_report(filename, sheet_name):
     wb = load_workbook(f"{filename}.xlsx", data_only=True)
     ws = wb[f"{sheet_name}"]
@@ -208,5 +210,5 @@ def generate_report(filename, sheet_name):
     return f"{filename} - {banking_date_str}"
 
 if __name__ == "__main__":
-    output_filename = generate_report("D:\Data\Personal\Documents\Others\HunterBadminton\Data\Bank 2023 - NewFormat", "Sheet1")
+    output_filename = generate_report(os.getcwd() +"\Data\Bank 2023 - NewFormat", "Sheet1")
     print(f"output filename is {output_filename}")

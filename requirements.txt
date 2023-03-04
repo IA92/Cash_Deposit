@@ -1,4 +1,5 @@
 ###### Requirements without Version Specifiers ######
+pywin32
 ###### Requirements with Version Specifiers ######
 openpyxl >= 3.1.0
 pyinstaller >= 5.8.0
