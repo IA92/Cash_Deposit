@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
 import os, sys
-import pandas as pd
 
 from HB_CashDeposit import generate_report
 from excel_pdf import generate_pdf
