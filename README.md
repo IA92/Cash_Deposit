@@ -12,7 +12,7 @@ This is a repository for an app to generate a report for a cash deposit.
     - Run  `generator.py`
     - Follow the GUI prompt
 - Option 2:
-    - Put the file in `Data` folder, e.g. CashDeposit.xlsx
+    - Put the file in `Data` folder, e.g. `CashDeposit.xlsx`
     - Run `HB_CashDeposit.py`
     - The generated .csv file will be located in the same `Data` folder
     - Run `excel_pdf.py`

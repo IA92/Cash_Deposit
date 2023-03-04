@@ -2,3 +2,5 @@
 venv/
 src/__pycache__/
 Data/
+build/
+generator.spec
