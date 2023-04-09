@@ -1,10 +1,11 @@
 import tkinter as tk
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from tkcalendar import Calendar, DateEntry
 from tkinter import *
 
-def update_value(amount_vars, cash_list, product_vars):
+def update_value(amount_vars, cash_list, product_vars, message_text_var):
+    total_amount=0
     for cash_amount in cash_list:
         try:
             # Get the values from the Entry widgets and convert to integers
@@ -13,6 +14,8 @@ def update_value(amount_vars, cash_list, product_vars):
                 value2 = float(cash_amount)
                 # Calculate the product
                 product = value1 * value2
+                # Add it to the total_amount
+                total_amount +=product
                 # Update the StringVar associated with the Label widget
                 product_vars[cash_amount].set("$"+str("{:.2f}".format(product)))
             else:
@@ -21,6 +24,8 @@ def update_value(amount_vars, cash_list, product_vars):
         except ValueError:
             # If the values are not valid integers, clear the result
             amount_vars[cash_amount].set("")
+    # Set the text to display total amount
+    message_text_var.set(f"Total amount is ${total_amount}")
 
 class BankDepositGUI:
     def __init__(self, master):
@@ -37,7 +42,7 @@ class BankDepositGUI:
             self.amount_var[cash_amount] = StringVar()
             self.amount_entry[cash_amount] = tk.Entry(master, textvariable=self.amount_var[cash_amount], width=14)
         self.date_label = tk.Label(master, text="Select date:")
-        self.date_entry = DateEntry(master, width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.date_entry = DateEntry(master, locale= "en_AU", width=12, background='darkblue', foreground='white', borderwidth=2)
         self.deposit_button = tk.Button(master, text="Deposit", command=self.deposit)
 
         # Grid widgets
@@ -53,40 +58,46 @@ class BankDepositGUI:
             self.amount_entry[cash_amount].grid(row=row_idx, column=2, padx=5, pady=5)
             self.product_var[cash_amount] = StringVar(value = "-")
             tk.Label(master, textvariable=self.product_var[cash_amount]).grid(row=row_idx, column=3, padx=5, pady=5)
-            self.amount_entry[cash_amount].bind('<KeyRelease>', lambda event: update_value(self.amount_var, self.cash_list, self.product_var))
+            self.amount_entry[cash_amount].bind('<KeyRelease>', lambda event: update_value(self.amount_var, self.cash_list, self.product_var, self.message_text_var))
             row_idx=row_idx+1
-        self.deposit_button.grid(row=12, column=1, padx=5, pady=5)
+        self.message_text_var = StringVar()
+        self.message_text=tk.Label(master, textvariable=self.message_text_var).grid(row=row_idx, column=0, columnspan = 4, padx=5, pady=5)
+        self.deposit_button.grid(row=row_idx+1, column=1, padx=5, pady=5)
 
 
     def deposit(self):
-        # Get the amount and date from the user inputs
-        amount = self.amount_split.get()
-        date = self.date_entry.get()
+        # Get the date from the user inputs
+        date = self.date_entry.get_date().strftime("%A, %m/%d/%Y")
 
         # Validate user inputs
-        if not all(entry.get().isdigit() for entry in self.amount_entry.values()):
-            # Show an error message if any of the amount fields is not a valid integer
-            tk.messagebox.showerror("Error", "Please enter a valid integer in all amount fields")
-            return
-        total_amount = sum(int(entry.get()) for entry in self.amount_entry.values())
-
-        # Create a list with the deposit data
-        deposit_data = [datetime.now().strftime("%m/%d/%Y %H:%M:%S"), amount, date.strftime("%m/%d/%Y")]
+        deposit_data = []
+        total_amount = 0
+        for cash_amount in self.cash_list:
+            amount = round(float(cash_amount),2)
+            n_amount = int(self.amount_entry[cash_amount].get()) if self.amount_entry[cash_amount].get() else 0
+            each_amount = amount*n_amount
+            total_amount += each_amount
+            # Create a list with the deposit data
+            deposit_data.append([date, cash_amount, each_amount]) if len(deposit_data)==0 else deposit_data.append(["", cash_amount, each_amount])
+        deposit_data.append(["Total","",total_amount])
 
         # Write the data to a CSV file
         with open('deposits.csv', 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow(deposit_data)
+            for deposit_row in deposit_data:
+                writer.writerow(deposit_row) 
 
         # Show a confirmation message with the total amount deposited
-        tk.messagebox.showinfo("Deposit Successful", f"Total amount deposited: ${total_amount:.2f}")
+        self.message_text_var.set(f"Deposit Successful, Total amount deposited: ${total_amount:.2f}")
         
-        # Clear the amount fields
-        for entry in self.amount_entry.values():
-            entry.delete(0, tk.END)
+        # Clear entry fields
+        for cash_amount in self.cash_list:
+            self.amount_var[cash_amount].set("")
 
         # Set the date to today
-        self.date_entry.set_date(datetime.today().date())
+        self.date_entry.set_date(self.date_entry.get_date()+timedelta(days=1))
+        # Update the product var values
+        update_value(self.amount_var, self.cash_list, self.product_var, self.self.message_text_var)
 
 root = tk.Tk()
 bank_deposit_gui = BankDepositGUI(root)
