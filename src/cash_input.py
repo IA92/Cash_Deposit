@@ -78,8 +78,9 @@ class BankDepositGUI:
             each_amount = amount*n_amount
             total_amount += each_amount
             # Create a list with the deposit data
-            deposit_data.append([date, cash_amount, each_amount]) if len(deposit_data)==0 else deposit_data.append(["", cash_amount, each_amount])
-        deposit_data.append(["Total","",total_amount])
+            if n_amount > 0:
+                deposit_data.append([date, f"${cash_amount}", f"${each_amount}"]) if len(deposit_data)==0 else deposit_data.append(["", f"${cash_amount}", f"${each_amount}"])
+        deposit_data.append(["Total","",f"${total_amount}"])
 
         # Write the data to a CSV file
         with open('deposits.csv', 'a', newline='') as csvfile:
