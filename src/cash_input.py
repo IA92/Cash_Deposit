@@ -1,8 +1,17 @@
+from asyncio.windows_events import NULL
 import tkinter as tk
 import csv
 from datetime import datetime, timedelta
 from tkcalendar import Calendar, DateEntry
 from tkinter import *
+
+def next_widget(event):
+    event.widget
+    if event.keysym == 'Up':
+        event.widget.tk_focusPrev().focus()
+    elif event.keysym == 'Down' or event.keysym == 'Return':
+        event.widget.tk_focusNext().focus()
+    return "break"
 
 def update_value(amount_vars, cash_list, product_vars, message_text_var):
     total_amount=0
@@ -50,8 +59,8 @@ class BankDepositGUI:
         self.date_entry.grid(row=0, column=2, padx=5, pady=5)
         self.number_label.grid(row=1, column=0, padx=5, pady=5)
 
+        # Display product value
         self.product_var = {}
-
         row_idx = 1
         for cash_amount in self.cash_list:
             tk.Label(master, text=f"${'{:.2f}'.format(float(cash_amount))}").grid(row=row_idx, column=1, padx=5, pady=5)
@@ -64,6 +73,10 @@ class BankDepositGUI:
         self.message_text=tk.Label(master, textvariable=self.message_text_var).grid(row=row_idx, column=0, columnspan = 4, padx=5, pady=5)
         self.deposit_button.grid(row=row_idx+1, column=1, padx=5, pady=5)
 
+        # Use arrow key to navigate the entry
+        self.master.bind('<Up>', next_widget)
+        self.master.bind('<Down>', next_widget)
+        self.master.bind('<Return>', next_widget)
 
     def deposit(self):
         # Get the date from the user inputs
@@ -71,16 +84,16 @@ class BankDepositGUI:
 
         # Validate user inputs
         deposit_data = []
-        total_amount = 0
+        total_daily_amount = 0
         for cash_amount in self.cash_list:
             amount = round(float(cash_amount),2)
             n_amount = int(self.amount_entry[cash_amount].get()) if self.amount_entry[cash_amount].get() else 0
             each_amount = amount*n_amount
-            total_amount += each_amount
+            total_daily_amount += each_amount
             # Create a list with the deposit data
             if n_amount > 0:
-                deposit_data.append([date, f"${cash_amount}", f"${each_amount}"]) if len(deposit_data)==0 else deposit_data.append(["", f"${cash_amount}", f"${each_amount}"])
-        deposit_data.append(["Total","",f"${total_amount}"])
+                deposit_data.append([date, f"${cash_amount}", f"{n_amount}", f"${each_amount}"]) if len(deposit_data)==0 else deposit_data.append(["", f"${cash_amount}", f"{n_amount}",f"${each_amount}"])
+        deposit_data.append(["Total","","",f"${total_daily_amount}"])
 
         # Write the data to a CSV file
         with open('deposits.csv', 'a', newline='') as csvfile:
@@ -89,16 +102,19 @@ class BankDepositGUI:
                 writer.writerow(deposit_row) 
 
         # Show a confirmation message with the total amount deposited
-        self.message_text_var.set(f"Deposit Successful, Total amount deposited: ${total_amount:.2f}")
+        self.message_text_var.set(f"Deposit Successful, Daily amount deposited: ${total_daily_amount:.2f}")
         
         # Clear entry fields
         for cash_amount in self.cash_list:
             self.amount_var[cash_amount].set("")
 
-        # Set the date to today
+        # Reset the cursor to the top entry
+        self.amount_entry[self.cash_list[0]].focus_set()
+
+        # Set the date to the next day
         self.date_entry.set_date(self.date_entry.get_date()+timedelta(days=1))
-        # Update the product var values
-        update_value(self.amount_var, self.cash_list, self.product_var, self.self.message_text_var)
+        # Clear the product var values
+        update_value(self.amount_var, self.cash_list, self.product_var, NULL) #Don't update the message var
 
 root = tk.Tk()
 bank_deposit_gui = BankDepositGUI(root)
