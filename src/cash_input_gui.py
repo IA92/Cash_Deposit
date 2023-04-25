@@ -164,10 +164,10 @@ class BankDepositGUI:
             for cash_amount in self.cash_list:
                 n_amount = self.deposit_data[date][cash_amount]["n_amount"]
                 each_amount = self.deposit_data[date][cash_amount]["each_amount"]
-                if (n_amount > 2):
-                    total_cash_amount += each_amount
-                else:
+                if (cash_amount in  ["2", "1", "0.50", "0.20", "0.10", "0.05"]):
                     total_coin_amount += each_amount
+                else:
+                    total_cash_amount += each_amount
             total_daily_amount = self.deposit_data[date]["total_daily_amount"]
             total_amount += total_daily_amount
 
