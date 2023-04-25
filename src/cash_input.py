@@ -28,6 +28,8 @@ class BankDepositGUI:
         for cash_amount in self.cash_list:
             self.amount_var[cash_amount] = StringVar()
             self.amount_entry[cash_amount] = tk.Entry(master, textvariable=self.amount_var[cash_amount], width=14)
+        self.banking_date_label = tk.Label(master, text="Banking date:")
+        self.banking_date_entry = DateEntry(master, locale= "en_AU", width=12, background='darkblue', foreground='white', borderwidth=2)        
         self.date_label = tk.Label(master, text="Select date:")
         self.date_entry = DateEntry(master, locale= "en_AU", width=12, background='darkblue', foreground='white', borderwidth=2)
         self.date_entry.bind("<<DateEntrySelected>>", self.get_entries)
@@ -35,13 +37,15 @@ class BankDepositGUI:
         self.complete_button = tk.Button(master, text="Complete", command=self.generate_report)
 
         # Grid widgets
-        self.date_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
-        self.date_entry.grid(row=0, column=2, padx=5, pady=5)
+        self.banking_date_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        self.banking_date_entry.grid(row=0, column=2, padx=5, pady=5)
+        self.date_label.grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        self.date_entry.grid(row=1, column=2, padx=5, pady=5)
         self.number_label.grid(row=1, column=0, padx=5, pady=5)
 
         # Display product value
         self.product_var = {}
-        row_idx = 1
+        row_idx = 2
         for cash_amount in self.cash_list:
             tk.Label(master, text=f"${'{:.2f}'.format(float(cash_amount))}").grid(row=row_idx, column=1, padx=5, pady=5)
             self.amount_entry[cash_amount].grid(row=row_idx, column=2, padx=5, pady=5)
