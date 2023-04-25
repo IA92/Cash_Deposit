@@ -54,6 +54,7 @@ class BankDepositGUI:
             self.amount_entry[cash_amount] = tk.Entry(master, textvariable=self.amount_var[cash_amount], width=14)
         self.date_label = tk.Label(master, text="Select date:")
         self.date_entry = DateEntry(master, locale= "en_AU", width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.date_entry.bind("<<DateEntrySelected>>", self.get_entries)
         self.deposit_button = tk.Button(master, text="Deposit", command=self.deposit)
         self.complete_button = tk.Button(master, text="Complete", command=self.generate_report)
 
@@ -82,6 +83,31 @@ class BankDepositGUI:
         self.master.bind('<Down>', next_widget)
         self.master.bind('<Return>', next_widget)
         self.master.bind("<plus>", self.deposit)
+
+    def get_entries(self, event):
+        # Get the date from the user inputs
+        date = self.date_entry.get_date().strftime("%A, %m/%d/%Y")
+        # Get entries for selected date if the entries exist
+        try:
+            date_entry = self.deposit_data[date]
+            if date_entry:
+                for cash_amount in self.cash_list:
+                    n_amount = date_entry[cash_amount]["n_amount"]
+                    each_amount = date_entry[cash_amount]["each_amount"]
+                    if n_amount:
+                        self.amount_var[cash_amount].set(str(n_amount))
+                        self.product_var[cash_amount].set(str(each_amount))
+                    else:
+                        self.amount_var[cash_amount].set("")
+                        self.product_var[cash_amount].set("-")
+                # Show a message with the total amount deposited on that day
+                self.message_text_var.set(f"Daily amount: ${date_entry['total_daily_amount']}")
+        except:
+            # Clear entry fields
+            for cash_amount in self.cash_list:
+                self.amount_var[cash_amount].set("")
+                self.product_var[cash_amount].set("")
+                self.message_text_var.set(f"")
 
     def deposit(self, event=None):
         # Get the date from the user inputs
