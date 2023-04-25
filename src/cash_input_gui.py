@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from tkcalendar import Calendar, DateEntry
 from tkinter import *
 
+from report import cash_deposit_struct, generate_report
+
 def next_widget(event):
     event.widget
     if event.keysym == 'Up':
@@ -41,7 +43,7 @@ class BankDepositGUI:
         self.banking_date_entry.grid(row=0, column=2, padx=5, pady=5)
         self.date_label.grid(row=1, column=0, padx=5, pady=5, sticky='w')
         self.date_entry.grid(row=1, column=2, padx=5, pady=5)
-        self.number_label.grid(row=1, column=0, padx=5, pady=5)
+        self.number_label.grid(row=2, column=0, padx=5, pady=5)
 
         # Display product value
         self.product_var = {}
@@ -152,27 +154,42 @@ class BankDepositGUI:
         if any([self.amount_entry[cash_amount].get() for cash_amount in self.cash_list]):
             self.deposit()
 
-        # Get the deposit data and write it in an excel file
+        # Get the summary of the deposit data
         report = []
+        total_cash_amount = 0
+        total_coin_amount = 0
         total_amount = 0
         for date in sorted(self.deposit_data.keys(), reverse = False):
             daily_report = []
             for cash_amount in self.cash_list:
                 n_amount = self.deposit_data[date][cash_amount]["n_amount"]
                 each_amount = self.deposit_data[date][cash_amount]["each_amount"]
-                # Create a list with the deposit data
-                if n_amount > 0:
-                    daily_report.append([date.strftime("%A, %m/%d/%Y"), f"${cash_amount}", f"{n_amount}", f"${each_amount}"]) if len(daily_report)==0 else daily_report.append(["", f"${cash_amount}", f"{n_amount}",f"${each_amount}"])
-            report.extend(daily_report)
+                if (n_amount > 2):
+                    total_cash_amount += each_amount
+                else:
+                    total_coin_amount += each_amount
             total_daily_amount = self.deposit_data[date]["total_daily_amount"]
-            report.append(["Total","","",f"${total_daily_amount}"])
             total_amount += total_daily_amount
 
+        # Assign data to struct
+        report_banking_date = self.banking_date_entry.get_date().strftime("%A, %d/%m/%Y")
+        report_start_date = sorted(self.deposit_data.keys(), reverse = False)[0].strftime("%A, %d/%m/%Y")
+        report_end_date = sorted(self.deposit_data.keys(), reverse = False)[-1].strftime("%A, %d/%m/%Y")
+        report_date = (report_banking_date, report_start_date, report_end_date)
+
+        report_cash_amount = total_cash_amount
+        report_coin_amount = total_coin_amount
+        report_total_amount = total_amount
+        report_amount = (report_cash_amount, report_coin_amount, report_total_amount)
+
+        report_data = cash_deposit_struct(report_date, report_amount, self.deposit_data, self.cash_list)
+
         # Write the data to a CSV file
-        with open('deposits.csv', 'a', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            for deposit_row in report:
-                writer.writerow(deposit_row) 
+        generate_report(report_data)
+        # with open('deposits.csv', 'a', newline='') as csvfile:
+        #     writer = csv.writer(csvfile)
+        #     for deposit_row in report:
+        #         writer.writerow(deposit_row) 
 
         # Show a confirmation message with the total amount deposited
         self.message_text_var.set(f"Report Generated Successful, Total amount deposited: ${total_amount:.2f}")
