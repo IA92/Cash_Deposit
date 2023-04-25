@@ -86,7 +86,7 @@ class BankDepositGUI:
 
     def get_entries(self, event):
         # Get the date from the user inputs
-        date = self.date_entry.get_date().strftime("%A, %m/%d/%Y")
+        date = self.date_entry.get_date()
         # Get entries for selected date if the entries exist
         try:
             date_entry = self.deposit_data[date]
@@ -111,7 +111,7 @@ class BankDepositGUI:
 
     def deposit(self, event=None):
         # Get the date from the user inputs
-        date = self.date_entry.get_date().strftime("%A, %m/%d/%Y")
+        date = self.date_entry.get_date()
 
         if any([self.amount_entry[cash_amount].get() for cash_amount in self.cash_list]):
             # Save user inputs
@@ -158,7 +158,7 @@ class BankDepositGUI:
                 each_amount = self.deposit_data[date][cash_amount]["each_amount"]
                 # Create a list with the deposit data
                 if n_amount > 0:
-                    daily_report.append([date, f"${cash_amount}", f"{n_amount}", f"${each_amount}"]) if len(daily_report)==0 else daily_report.append(["", f"${cash_amount}", f"{n_amount}",f"${each_amount}"])
+                    daily_report.append([date.strftime("%A, %m/%d/%Y"), f"${cash_amount}", f"{n_amount}", f"${each_amount}"]) if len(daily_report)==0 else daily_report.append(["", f"${cash_amount}", f"{n_amount}",f"${each_amount}"])
             report.extend(daily_report)
             total_daily_amount = self.deposit_data[date]["total_daily_amount"]
             report.append(["Total","","",f"${total_daily_amount}"])
