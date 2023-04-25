@@ -3,8 +3,9 @@ from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import Alignment, Font
 from datetime import date, datetime, timedelta
 
-
 import os
+
+from excel_pdf import generate_pdf
 
 class cash_deposit_struct:
     def __init__(self, date:tuple, amount:tuple, deposit_data:dict, cash_list: list):
@@ -189,8 +190,12 @@ def generate_report(data:cash_deposit_struct):
     output_ws.cell(output_r_idx, 2).number_format = u'"$ "#,##0.00'
 
     #Save the spreadsheet
-    wb.save(f"{os.getcwd()}\Data\CashDeposit 2023 - GUI - {banking_date}.xlsx")
+    generated_excel_filename = f"{os.getcwd()}\Data\CashDeposit 2023 - GUI - {banking_date}"
+    wb.save(f"{generated_excel_filename}.xlsx")
     wb.close()
+
+    # Write pdf
+    generate_pdf(os.path.abspath(generated_excel_filename), f"Summary {banking_date}")
 
 if __name__ == "__main__":
     # Assign data to struct

@@ -2,11 +2,11 @@
 from win32com import client
 import os
 
-def generate_pdf(filename):
+def generate_pdf(filename, sheetname):
     try:
         excel = client.Dispatch("Excel.Application")
         sheets = excel.Workbooks.Open(f"{filename}.xlsx")
-        work_sheets = sheets.Worksheets[1]
+        work_sheets = sheets.Worksheets(sheetname)
         work_sheets.ExportAsFixedFormat(0, f"{filename}.pdf")
         sheets.Close(True)
         excel.Quit()

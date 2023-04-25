@@ -184,7 +184,7 @@ class BankDepositGUI:
 
         report_data = cash_deposit_struct(report_date, report_amount, self.deposit_data, self.cash_list)
 
-        # Write the data to a CSV file
+        # Write the data to a CSV file and generate report
         generate_report(report_data)
 
         # Show a confirmation message with the total amount deposited
