@@ -102,13 +102,13 @@ def generate_report(data:cash_deposit_struct):
             apply_border_at_row(output_r_idx, 1, 8, both_border)
             output_r_idx += 1
         #Add each entry
-        output_ws.cell(output_r_idx, 1).value = date.strftime("%A, %d/%m/%Y")
+        output_ws.cell(output_r_idx, 1).value = date.strftime("%a %d/%m/%y")
         output_ws.cell(output_r_idx, 1).alignment = Alignment(horizontal='left')
         apply_border_at_row(output_r_idx, 1, 8, top_border)
         #Write the currency, qty and amount for non-zero entries
         for cash_amount in data.cash_list:
             if (data.deposit_data[date][cash_amount]["n_amount"] > 0):
-                output_ws.cell(output_r_idx, 6).value = f"${cash_amount}"
+                output_ws.cell(output_r_idx, 6).value = float(cash_amount)
                 output_ws.cell(output_r_idx, 6).number_format = u'"$ "#,##0.00'
                 output_ws.cell(output_r_idx, 7).value = data.deposit_data[date][cash_amount]["n_amount"]
                 output_ws.cell(output_r_idx, 8).value = data.deposit_data[date][cash_amount]["each_amount"]
@@ -161,29 +161,31 @@ def generate_report(data:cash_deposit_struct):
     #Heading of the table
     output_ws.cell(output_r_idx,1).value = "Date"
     output_ws.cell(output_r_idx,2).value = "Cash"
-    output_ws.cell(output_r_idx,4).value = "Social"
+    output_ws.cell(output_r_idx,4).value = "Playing"
     output_ws.cell(output_r_idx,5).value = "Junior"
     output_ws.cell(output_r_idx,6).value = "Locker"
     output_ws.cell(output_r_idx,7).value = "Membership"
     output_ws.cell(output_r_idx,8).value = "Canteen"
     output_ws.cell(output_r_idx,9).value = "Hall Hire" 
-    output_ws.cell(output_r_idx,10).value = "Total"
+    output_ws.cell(output_r_idx,10).value = "Restring"
+    output_ws.cell(output_r_idx,11).value = "Total"
     output_r_idx+=1
 
     #Put in the total amount for each day
     for date in sorted(data.deposit_data.keys(), reverse = False):
         #Add each entry
-        banking_date= datetime.strptime(data.banking_date,"%A, %d/%m/%Y").strftime('%a %x')
-        output_ws.cell(output_r_idx, 1).value = banking_date
-        # output_ws.cell(output_r_idx, 1).number_format = 'dd/mm/yyyy'
+        output_ws.cell(output_r_idx, 1).value = date.strftime("%a %d/%m/%y")
         output_ws.cell(output_r_idx, 1).alignment = Alignment(horizontal='left')
         #Get the detail in each amount
         output_ws.cell(output_r_idx, 2).value = data.deposit_data[date]["total_daily_amount"]
         output_ws.cell(output_r_idx, 2).number_format = u'"$ "#,##0.00'
+        #Add the total
+        output_ws.cell(output_r_idx, 11).value = f"=SUM(D{output_r_idx}:J{output_r_idx})"
+        output_ws.cell(output_r_idx, 11).number_format = u'"$ "#,##0.00'
         output_r_idx+=1
     #Add the total
     output_ws.cell(output_r_idx, 1).value = "Total"
-    output_ws.cell(output_r_idx, 2).value = f"=SUM(D{output_r_idx}:J{output_r_idx})"
+    output_ws.cell(output_r_idx, 2).value = f"=SUM(B{output_row_offset+1}:B{output_r_idx-1})"
     output_ws.cell(output_r_idx, 2).number_format = u'"$ "#,##0.00'
 
     #Save the spreadsheet
