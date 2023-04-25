@@ -36,7 +36,7 @@ class BankDepositGUI:
         self.date_entry = DateEntry(master, locale= "en_AU", width=12, background='darkblue', foreground='white', borderwidth=2)
         self.date_entry.bind("<<DateEntrySelected>>", self.get_entries)
         self.deposit_button = tk.Button(master, text="Deposit", command=self.deposit)
-        self.complete_button = tk.Button(master, text="Complete", command=self.generate_report)
+        self.generate_button = tk.Button(master, text="Generate", command=self.generate_report)
 
         # Grid widgets
         self.banking_date_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
@@ -58,7 +58,7 @@ class BankDepositGUI:
         self.message_text_var = StringVar()
         self.message_text=tk.Label(master, textvariable=self.message_text_var).grid(row=row_idx, column=0, columnspan = 4, padx=5, pady=5)
         self.deposit_button.grid(row=row_idx+1, column=1, padx=5, pady=5)
-        self.complete_button.grid(row=row_idx+2, column=1, padx=5, pady=5)
+        self.generate_button.grid(row=row_idx+2, column=1, padx=5, pady=5)
 
         # Use arrow key to navigate the entry
         self.master.bind('<Up>', next_widget)
@@ -134,18 +134,18 @@ class BankDepositGUI:
                 self.deposit_data[date][cash_amount]["each_amount"]=each_amount
             self.deposit_data[date]["total_daily_amount"]=total_daily_amount
 
-            # Show a confirmation message with the total amount deposited
-            self.message_text_var.set(f"Deposit Successful, Daily amount deposited: ${total_daily_amount:.2f}")
-            
-            # Clear entry fields
-            for cash_amount in self.cash_list:
-                self.amount_var[cash_amount].set("")
-
             # Reset the cursor to the top entry
             self.amount_entry[self.cash_list[0]].focus_set()
 
             # Set the date to the next day
             self.date_entry.set_date(self.date_entry.get_date()+timedelta(days=1))
+          
+            # Get entries if exist
+            self.get_entries(event)
+            
+            # Show a confirmation message with the total amount deposited
+            self.message_text_var.set(f"Deposit Successful, Daily amount deposited: ${total_daily_amount:.2f}")
+
             # Clear the product var values
             self.update_value(NULL) #Don't update the message var
 
@@ -187,22 +187,17 @@ class BankDepositGUI:
         # Write the data to a CSV file and generate report
         generate_report(report_data)
 
-        # Show a confirmation message with the total amount deposited
-        self.message_text_var.set(f"Report Generated Successful, Total amount deposited: ${total_amount:.2f}")
-        
-        # Clear entry fields
-        for cash_amount in self.cash_list:
-            self.amount_var[cash_amount].set("")
-
         # Reset the cursor to the top entry
         self.amount_entry[self.cash_list[0]].focus_set()
 
+        # Get entries if exist
+        self.get_entries(event)
+
+        # Show a confirmation message with the total amount deposited
+        self.message_text_var.set(f"Report Generated Successful, Total amount deposited: ${total_amount:.2f}")
+
         # Clear the product var values
         self.update_value(NULL) #Don't update the message var
-
-        # Disable the buttons
-        self.deposit_button.config(state="disabled")
-        self.complete_button.config(state="disabled")
 
 root = tk.Tk()
 bank_deposit_gui = BankDepositGUI(root)
