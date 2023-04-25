@@ -1,5 +1,4 @@
 # Cash_Deposit
-
 This is a repository for an app to generate a report for a cash deposit.
 
 ## Getting started
@@ -10,7 +9,7 @@ This is a repository for an app to generate a report for a cash deposit.
 ### Directly through the python scripts
 - Option 1:
     - Adjust the `generated_excel_filename` in report.py
-        - Optional: add/omit a `Data` folder to make it neater/straightforward
+        - Optional: Add/omit a `Data` folder to make it neater/straightforward
     - Run  `cash_input_gui.py`
     - Follow the GUI prompt
 ### Through an .exe file
@@ -19,4 +18,3 @@ This is a repository for an app to generate a report for a cash deposit.
     - The executable will be created under a folder called `dist`!
     - Note: If it crashes because of babel.numbers, run `pyinstaller -F --hidden-import "babel.numbers" src/cash_input_gui.py` instead from the main directory
 - Run the app and follow the GUI prompt
-
