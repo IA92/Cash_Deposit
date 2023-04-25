@@ -113,34 +113,35 @@ class BankDepositGUI:
         # Get the date from the user inputs
         date = self.date_entry.get_date().strftime("%A, %m/%d/%Y")
 
-        # Save user inputs
-        self.deposit_data[date] = {}
-        total_daily_amount = 0
-        for cash_amount in self.cash_list:
-            amount = round(float(cash_amount),2)
-            n_amount = int(self.amount_entry[cash_amount].get()) if self.amount_entry[cash_amount].get() else 0
-            each_amount = amount*n_amount
-            total_daily_amount += each_amount
-            # Save the data for each date
-            self.deposit_data[date][cash_amount]={}
-            self.deposit_data[date][cash_amount]["n_amount"]=n_amount
-            self.deposit_data[date][cash_amount]["each_amount"]=each_amount
-        self.deposit_data[date]["total_daily_amount"]=total_daily_amount
+        if any([self.amount_entry[cash_amount].get() for cash_amount in self.cash_list]):
+            # Save user inputs
+            self.deposit_data[date] = {}
+            total_daily_amount = 0
+            for cash_amount in self.cash_list:
+                amount = round(float(cash_amount),2)
+                n_amount = int(self.amount_entry[cash_amount].get()) if self.amount_entry[cash_amount].get() else 0
+                each_amount = amount*n_amount
+                total_daily_amount += each_amount
+                # Save the data for each date
+                self.deposit_data[date][cash_amount]={}
+                self.deposit_data[date][cash_amount]["n_amount"]=n_amount
+                self.deposit_data[date][cash_amount]["each_amount"]=each_amount
+            self.deposit_data[date]["total_daily_amount"]=total_daily_amount
 
-        # Show a confirmation message with the total amount deposited
-        self.message_text_var.set(f"Deposit Successful, Daily amount deposited: ${total_daily_amount:.2f}")
-        
-        # Clear entry fields
-        for cash_amount in self.cash_list:
-            self.amount_var[cash_amount].set("")
+            # Show a confirmation message with the total amount deposited
+            self.message_text_var.set(f"Deposit Successful, Daily amount deposited: ${total_daily_amount:.2f}")
+            
+            # Clear entry fields
+            for cash_amount in self.cash_list:
+                self.amount_var[cash_amount].set("")
 
-        # Reset the cursor to the top entry
-        self.amount_entry[self.cash_list[0]].focus_set()
+            # Reset the cursor to the top entry
+            self.amount_entry[self.cash_list[0]].focus_set()
 
-        # Set the date to the next day
-        self.date_entry.set_date(self.date_entry.get_date()+timedelta(days=1))
-        # Clear the product var values
-        update_value(self.amount_var, self.cash_list, self.product_var, NULL) #Don't update the message var
+            # Set the date to the next day
+            self.date_entry.set_date(self.date_entry.get_date()+timedelta(days=1))
+            # Clear the product var values
+            update_value(self.amount_var, self.cash_list, self.product_var, NULL) #Don't update the message var
 
     def generate_report(self, event=None):
         # Check if there is any entry
