@@ -13,30 +13,6 @@ def next_widget(event):
         event.widget.tk_focusNext().focus()
     return "break"
 
-def update_value(amount_vars, cash_list, product_vars, message_text_var):
-    total_amount=0
-    for cash_amount in cash_list:
-        try:
-            # Get the values from the Entry widgets and convert to integers
-            if amount_vars[cash_amount].get():
-                value1 = int(amount_vars[cash_amount].get())
-                value2 = float(cash_amount)
-                # Calculate the product
-                product = value1 * value2
-                # Add it to the total_amount
-                total_amount += round(product, 2)
-                # Update the StringVar associated with the Label widget
-                product_vars[cash_amount].set("$"+str("{:.2f}".format(product)))
-            else:
-                # Update the StringVar associated with the Label widget
-                product_vars[cash_amount].set("-")
-        except ValueError:
-            # If the values are not valid integers, clear the result
-            amount_vars[cash_amount].set("")
-    # Set the text to display total amount
-    if (message_text_var):
-        message_text_var.set(f"Total amount is ${total_amount}")
-
 class BankDepositGUI:
     def __init__(self, master):
         self.master = master
@@ -71,7 +47,7 @@ class BankDepositGUI:
             self.amount_entry[cash_amount].grid(row=row_idx, column=2, padx=5, pady=5)
             self.product_var[cash_amount] = StringVar(value = "-")
             tk.Label(master, textvariable=self.product_var[cash_amount]).grid(row=row_idx, column=3, padx=5, pady=5)
-            self.amount_entry[cash_amount].bind('<KeyRelease>', lambda event: update_value(self.amount_var, self.cash_list, self.product_var, self.message_text_var))
+            self.amount_entry[cash_amount].bind('<KeyRelease>', lambda event: self.update_value(self.message_text_var))
             row_idx=row_idx+1
         self.message_text_var = StringVar()
         self.message_text=tk.Label(master, textvariable=self.message_text_var).grid(row=row_idx, column=0, columnspan = 4, padx=5, pady=5)
@@ -83,6 +59,30 @@ class BankDepositGUI:
         self.master.bind('<Down>', next_widget)
         self.master.bind('<Return>', next_widget)
         self.master.bind("<plus>", self.deposit)
+
+    def update_value(self, message_text_var):
+        total_amount=0
+        for cash_amount in self.cash_list:
+            try:
+                # Get the values from the Entry widgets and convert to integers
+                if self.amount_var[cash_amount].get():
+                    value1 = int(self.amount_var[cash_amount].get())
+                    value2 = float(cash_amount)
+                    # Calculate the product
+                    product = value1 * value2
+                    # Add it to the total_amount
+                    total_amount += round(product, 2)
+                    # Update the StringVar associated with the Label widget
+                    self.product_var[cash_amount].set("$"+str("{:.2f}".format(product)))
+                else:
+                    # Update the StringVar associated with the Label widget
+                    self.product_var[cash_amount].set("-")
+            except ValueError:
+                # If the values are not valid integers, clear the result
+                self.amount_var[cash_amount].set("")
+        # Set the text to display total amount
+        if (message_text_var):
+            message_text_var.set(f"Total amount is ${total_amount}")
 
     def get_entries(self, event):
         # Get the date from the user inputs
@@ -141,7 +141,7 @@ class BankDepositGUI:
             # Set the date to the next day
             self.date_entry.set_date(self.date_entry.get_date()+timedelta(days=1))
             # Clear the product var values
-            update_value(self.amount_var, self.cash_list, self.product_var, NULL) #Don't update the message var
+            self.update_value(NULL) #Don't update the message var
 
     def generate_report(self, event=None):
         # Check if there is any entry
@@ -181,7 +181,7 @@ class BankDepositGUI:
         self.amount_entry[self.cash_list[0]].focus_set()
 
         # Clear the product var values
-        update_value(self.amount_var, self.cash_list, self.product_var, NULL) #Don't update the message var
+        self.update_value(NULL) #Don't update the message var
 
         # Disable the buttons
         self.deposit_button.config(state="disabled")
