@@ -186,10 +186,6 @@ class BankDepositGUI:
 
         # Write the data to a CSV file
         generate_report(report_data)
-        # with open('deposits.csv', 'a', newline='') as csvfile:
-        #     writer = csv.writer(csvfile)
-        #     for deposit_row in report:
-        #         writer.writerow(deposit_row) 
 
         # Show a confirmation message with the total amount deposited
         self.message_text_var.set(f"Report Generated Successful, Total amount deposited: ${total_amount:.2f}")
