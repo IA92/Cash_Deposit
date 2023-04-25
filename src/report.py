@@ -190,7 +190,7 @@ def generate_report(data:cash_deposit_struct):
     output_ws.cell(output_r_idx, 2).number_format = u'"$ "#,##0.00'
 
     #Save the spreadsheet
-    generated_excel_filename = f"{os.getcwd()}\CashDeposit 2023 - GUI - {banking_date}"
+    generated_excel_filename = f"{os.getcwd()}\Data\CashDeposit 2023 - GUI - {banking_date}"
     wb.save(f"{generated_excel_filename}.xlsx")
     wb.close()
 
