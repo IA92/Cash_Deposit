@@ -24,17 +24,17 @@ class BankDepositGUI:
         self.cash_list = ["100", "50", "20", "10", "5", "2", "1", "0.50", "0.20", "0.10", "0.05"]
 
         # Create widgets
+        self.banking_date_label = tk.Label(master, text="Banking date:")
+        self.banking_date_entry = DateEntry(master, locale= "en_AU", width=12, background='darkblue', foreground='white', borderwidth=2)        
+        self.date_label = tk.Label(master, text="Select date:")
+        self.date_entry = DateEntry(master, locale= "en_AU", width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.date_entry.bind("<<DateEntrySelected>>", self.get_entries)
         self.number_label = tk.Label(master, text="Number of bills/coins:")
         self.amount_entry = {}
         self.amount_var = {}
         for cash_amount in self.cash_list:
             self.amount_var[cash_amount] = StringVar()
             self.amount_entry[cash_amount] = tk.Entry(master, textvariable=self.amount_var[cash_amount], width=14)
-        self.banking_date_label = tk.Label(master, text="Banking date:")
-        self.banking_date_entry = DateEntry(master, locale= "en_AU", width=12, background='darkblue', foreground='white', borderwidth=2)        
-        self.date_label = tk.Label(master, text="Select date:")
-        self.date_entry = DateEntry(master, locale= "en_AU", width=12, background='darkblue', foreground='white', borderwidth=2)
-        self.date_entry.bind("<<DateEntrySelected>>", self.get_entries)
         self.deposit_button = tk.Button(master, text="Deposit", command=self.deposit)
         self.generate_button = tk.Button(master, text="Generate", command=self.generate_report)
 
