@@ -64,7 +64,7 @@ class BankDepositGUI:
         self.master.bind('<Up>', next_widget)
         self.master.bind('<Down>', next_widget)
         self.master.bind('<Return>', next_widget)
-        self.master.bind("<plus>", self.deposit)
+        self.master.bind("<Right>", self.deposit)
 
     def update_value(self, message_text_var):
         total_amount=0
