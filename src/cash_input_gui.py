@@ -87,7 +87,7 @@ class BankDepositGUI:
                 # If the values are not valid integers, clear the result
                 self.amount_var[cash_amount].set("")
         # Set the text to display total amount
-        if (message_text_var):
+        if (message_text_var and total_amount > 0):
             message_text_var.set(f"Total amount is ${total_amount}")
 
     def get_entries(self, event):
