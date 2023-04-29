@@ -19,6 +19,8 @@ class cash_deposit_struct:
 
         self.deposit_data = deposit_data
 
+        self.total_cash_amount = {}
+
         self.cash_list = cash_list
 
 
@@ -107,20 +109,49 @@ def generate_report(data:cash_deposit_struct):
         output_ws.cell(output_r_idx, 1).alignment = Alignment(horizontal='left')
         apply_border_at_row(output_r_idx, 1, 8, top_border)
         #Write the currency, qty and amount for non-zero entries
+        data.total_cash_amount["total"] = 0
         for cash_amount in data.cash_list:
             if (data.deposit_data[date][cash_amount]["n_amount"] > 0):
+                #Write the cell in the excel file
                 output_ws.cell(output_r_idx, 6).value = float(cash_amount)
                 output_ws.cell(output_r_idx, 6).number_format = u'"$ "#,##0.00'
                 output_ws.cell(output_r_idx, 7).value = data.deposit_data[date][cash_amount]["n_amount"]
                 output_ws.cell(output_r_idx, 8).value = data.deposit_data[date][cash_amount]["each_amount"]
                 output_ws.cell(output_r_idx, 8).number_format = u'"$ "#,##0.00'
                 output_r_idx+=1
+                #Add to the total_cash_amount
+                if cash_amount in data.total_cash_amount:
+                    data.total_cash_amount[cash_amount]['n_amount'] += data.deposit_data[date][cash_amount]["n_amount"]
+                    data.total_cash_amount[cash_amount]['each_amount'] += data.deposit_data[date][cash_amount]["each_amount"]
+                    data.total_cash_amount["total"] += data.deposit_data[date][cash_amount]["each_amount"]
+                else:
+                    data.total_cash_amount[cash_amount]={}
+                    data.total_cash_amount[cash_amount]['n_amount']=data.deposit_data[date][cash_amount]["n_amount"]
+                    data.total_cash_amount[cash_amount]['each_amount']=data.deposit_data[date][cash_amount]["each_amount"]
+                    data.total_cash_amount["total"] = data.deposit_data[date][cash_amount]["each_amount"]
         #Write the daily total
         output_ws.cell(output_r_idx, 5).value = "Total Amount"
         output_ws.cell(output_r_idx, 8).value = data.deposit_data[date]["total_daily_amount"]
         output_ws.cell(output_r_idx, 8).number_format = u'"$ "#,##0.00'
         apply_border_at_row(output_r_idx, 1, 8, both_border)
         output_r_idx+=1
+    #Write the total amount
+    output_ws.cell(output_r_idx, 1).value = "Total"
+    output_ws.cell(output_r_idx, 1).alignment = Alignment(horizontal='left')
+    apply_border_at_row(output_r_idx, 1, 8, top_border)
+    for cash_amount in data.cash_list:
+        if cash_amount in data.total_cash_amount:
+            #Write the cell in the excel file
+            output_ws.cell(output_r_idx, 6).value = float(cash_amount)
+            output_ws.cell(output_r_idx, 6).number_format = u'"$ "#,##0.00'
+            output_ws.cell(output_r_idx, 7).value = data.total_cash_amount[cash_amount]["n_amount"]
+            output_ws.cell(output_r_idx, 8).value = data.total_cash_amount[cash_amount]["each_amount"]
+            output_ws.cell(output_r_idx, 8).number_format = u'"$ "#,##0.00'
+            output_r_idx+=1
+    output_ws.cell(output_r_idx, 5).value = "Total Amount"
+    output_ws.cell(output_r_idx, 8).value = data.total_cash_amount["total"]
+    output_ws.cell(output_r_idx, 8).number_format = u'"$ "#,##0.00'
+    apply_border_at_row(output_r_idx, 1, 8, both_border)
 
 
     ##Create a worksheet for quickbooks input
