@@ -9,7 +9,7 @@ This is a repository for an app to generate a report for a cash deposit.
 ### Directly through the python scripts
 - Option 1:
     - Adjust the `generated_excel_filename` in report.py
-        - Optional: Add/omit a `Data` folder to make it neater/straightforward
+        - Optional: Add/omit a `Report` folder to make it neater/straightforward
     - Run  `cash_input_gui.py`
     - Follow the GUI prompt
 ### Through an .exe file

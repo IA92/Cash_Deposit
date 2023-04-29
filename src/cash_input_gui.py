@@ -56,9 +56,9 @@ class BankDepositGUI:
             self.amount_entry[cash_amount].bind('<KeyRelease>', lambda event: self.update_value(self.message_text_var))
             row_idx=row_idx+1
         self.message_text_var = StringVar()
-        self.message_text=tk.Label(master, textvariable=self.message_text_var).grid(row=row_idx, column=0, columnspan = 4, padx=5, pady=5)
-        self.deposit_button.grid(row=row_idx+1, column=1, padx=5, pady=5)
-        self.generate_button.grid(row=row_idx+2, column=1, padx=5, pady=5)
+        self.message_text=tk.Label(master, textvariable=self.message_text_var).grid(row=row_idx, column=0, columnspan = 7, padx=5, pady=5)
+        self.deposit_button.grid(row=row_idx+1, column=1,padx=5, pady=5)
+        self.generate_button.grid(row=row_idx+2, column=1,padx=5, pady=5)
 
         # Use arrow key to navigate the entry
         self.master.bind('<Up>', next_widget)
@@ -154,50 +154,66 @@ class BankDepositGUI:
         if any([self.amount_entry[cash_amount].get() for cash_amount in self.cash_list]):
             self.deposit()
 
-        # Get the summary of the deposit data
-        report = []
-        total_cash_amount = 0
-        total_coin_amount = 0
-        total_amount = 0
-        for date in sorted(self.deposit_data.keys(), reverse = False):
-            daily_report = []
+        # Skip report generation if no data has been recorded
+        if len(self.deposit_data.keys()) > 0 :
+            # Get the summary of the deposit data
+            total_cash_amount = 0
+            total_coin_amount = 0
+            total_amount = 0
+            for date in sorted(self.deposit_data.keys(), reverse = False):
+                for cash_amount in self.cash_list:
+                    each_amount = self.deposit_data[date][cash_amount]["each_amount"]
+                    if (cash_amount in  ["2", "1", "0.50", "0.20", "0.10", "0.05"]):
+                        total_coin_amount += each_amount
+                    else:
+                        total_cash_amount += each_amount
+                total_daily_amount = self.deposit_data[date]["total_daily_amount"]
+                total_amount += total_daily_amount
+
+            # Assign data to struct
+            report_banking_date = self.banking_date_entry.get_date().strftime("%A, %d/%m/%Y")
+            report_start_date = sorted(self.deposit_data.keys(), reverse = False)[0].strftime("%A, %d/%m/%Y")
+            report_end_date = sorted(self.deposit_data.keys(), reverse = False)[-1].strftime("%A, %d/%m/%Y")
+            report_date = (report_banking_date, report_start_date, report_end_date)
+
+            report_cash_amount = total_cash_amount
+            report_coin_amount = total_coin_amount
+            report_total_amount = total_amount
+            report_amount = (report_cash_amount, report_coin_amount, report_total_amount)
+
+            report_data = cash_deposit_struct(report_date, report_amount, self.deposit_data, self.cash_list)
+
+            # Write the data to a CSV file and generate report
+            generate_report(report_data)
+
+            # Display the total in new columns
+            row_idx = 2
             for cash_amount in self.cash_list:
-                n_amount = self.deposit_data[date][cash_amount]["n_amount"]
-                each_amount = self.deposit_data[date][cash_amount]["each_amount"]
-                if (cash_amount in  ["2", "1", "0.50", "0.20", "0.10", "0.05"]):
-                    total_coin_amount += each_amount
+                if cash_amount in report_data.total_cash_amount:
+                    tk.Label(self.master, text=f"{report_data.total_cash_amount[cash_amount]['n_amount']}").grid(row=row_idx, column=5, padx=5, pady=5)
+                    tk.Label(self.master, text=f"${'{:.2f}'.format(report_data.total_cash_amount[cash_amount]['each_amount'])}").grid(row=row_idx, column=6, padx=5, pady=5)
                 else:
-                    total_cash_amount += each_amount
-            total_daily_amount = self.deposit_data[date]["total_daily_amount"]
-            total_amount += total_daily_amount
+                    tk.Label(self.master, text=f"0").grid(row=row_idx, column=5, padx=5, pady=5)
+                    tk.Label(self.master, text=f"${'{:.2f}'.format(0)}").grid(row=row_idx, column=6, padx=5, pady=5)
+                row_idx=row_idx+1
+            # Adjust the button position
+            self.deposit_button.grid(columnspan=2)
+            self.generate_button.grid(columnspan=2)
 
-        # Assign data to struct
-        report_banking_date = self.banking_date_entry.get_date().strftime("%A, %d/%m/%Y")
-        report_start_date = sorted(self.deposit_data.keys(), reverse = False)[0].strftime("%A, %d/%m/%Y")
-        report_end_date = sorted(self.deposit_data.keys(), reverse = False)[-1].strftime("%A, %d/%m/%Y")
-        report_date = (report_banking_date, report_start_date, report_end_date)
+            # Reset the cursor to the top entry
+            self.amount_entry[self.cash_list[0]].focus_set()
 
-        report_cash_amount = total_cash_amount
-        report_coin_amount = total_coin_amount
-        report_total_amount = total_amount
-        report_amount = (report_cash_amount, report_coin_amount, report_total_amount)
+            # Get entries if exist
+            self.get_entries(event)
 
-        report_data = cash_deposit_struct(report_date, report_amount, self.deposit_data, self.cash_list)
+            # Show a confirmation message with the total amount deposited
+            self.message_text_var.set(f"Report Generated Successful, Total amount deposited: ${total_amount:.2f}")
 
-        # Write the data to a CSV file and generate report
-        generate_report(report_data)
-
-        # Reset the cursor to the top entry
-        self.amount_entry[self.cash_list[0]].focus_set()
-
-        # Get entries if exist
-        self.get_entries(event)
-
-        # Show a confirmation message with the total amount deposited
-        self.message_text_var.set(f"Report Generated Successful, Total amount deposited: ${total_amount:.2f}")
-
-        # Clear the product var values
-        self.update_value(NULL) #Don't update the message var
+            # Clear the product var values
+            self.update_value(NULL) #Don't update the message var
+        
+        else:
+            self.message_text_var.set("No deposit data is recorded, report is not generated")
 
 root = tk.Tk()
 bank_deposit_gui = BankDepositGUI(root)
