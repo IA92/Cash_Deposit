@@ -89,7 +89,7 @@ def generate_report(data:cash_deposit_struct):
     max_page_line = 45
     for date in sorted(data.deposit_data.keys(), reverse = False):
         #Apply heading of the table for each page
-        if (output_r_idx > page_idx * max_page_line + 33):
+        if (output_r_idx >= page_idx * max_page_line + 33):
             output_r_idx += max_page_line - 33
             page_idx += 1
             #Heading of the table
@@ -132,6 +132,22 @@ def generate_report(data:cash_deposit_struct):
         output_ws.cell(output_r_idx, 8).number_format = u'"$ "#,##0.00'
         apply_border_at_row(output_r_idx, 1, 8, both_border)
         output_r_idx+=1
+    #Apply heading of the table for each page
+    if (output_r_idx >= page_idx * max_page_line + 33):
+        output_r_idx += max_page_line - 33
+        page_idx += 1
+        #Heading of the table
+        output_ws.cell(output_r_idx,1).value = "Date"
+        output_ws.cell(output_r_idx,6).value = "Currency"
+        output_ws.cell(output_r_idx,7).value = "Qty"
+        output_ws.cell(output_r_idx,8).value = "Amount"
+        #Apply right alignment on the number formatted column
+        output_ws.cell(output_r_idx,6).alignment = Alignment(horizontal='right')
+        output_ws.cell(output_r_idx,7).alignment = Alignment(horizontal='right')
+        output_ws.cell(output_r_idx,8).alignment = Alignment(horizontal='right')
+        #Apply the border setting to the heading row
+        apply_border_at_row(output_r_idx, 1, 8, both_border)
+        output_r_idx += 1
     #Write the total amount
     output_ws.cell(output_r_idx, 1).value = "Total"
     output_ws.cell(output_r_idx, 1).alignment = Alignment(horizontal='left')
@@ -190,13 +206,13 @@ def generate_report(data:cash_deposit_struct):
     #Heading of the table
     output_ws.cell(output_r_idx,1).value = "Date"
     output_ws.cell(output_r_idx,2).value = "Cash"
-    output_ws.cell(output_r_idx,4).value = "Playing"
-    output_ws.cell(output_r_idx,5).value = "Junior"
-    output_ws.cell(output_r_idx,6).value = "Locker"
+    output_ws.cell(output_r_idx,4).value = "Canteen"
+    output_ws.cell(output_r_idx,5).value = "Playing"
+    output_ws.cell(output_r_idx,6).value = "Hall Hire"
     output_ws.cell(output_r_idx,7).value = "Membership"
-    output_ws.cell(output_r_idx,8).value = "Canteen"
-    output_ws.cell(output_r_idx,9).value = "Hall Hire" 
-    output_ws.cell(output_r_idx,10).value = "Restring"
+    output_ws.cell(output_r_idx,8).value = "Restring"
+    output_ws.cell(output_r_idx,9).value = "Locker" 
+    output_ws.cell(output_r_idx,10).value = "Points"
     output_ws.cell(output_r_idx,11).value = "Total"
     output_r_idx+=1
 
