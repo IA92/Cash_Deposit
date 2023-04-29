@@ -56,7 +56,7 @@ class BankDepositGUI:
             self.amount_entry[cash_amount].bind('<KeyRelease>', lambda event: self.update_value(self.message_text_var))
             row_idx=row_idx+1
         self.message_text_var = StringVar()
-        self.message_text=tk.Label(master, textvariable=self.message_text_var).grid(row=row_idx, column=0, columnspan = 7, padx=5, pady=5)
+        self.message_text=tk.Label(master, textvariable=self.message_text_var).grid(row=row_idx, column=0, columnspan = 6, padx=5, pady=5)
         self.deposit_button.grid(row=row_idx+1, column=1,padx=5, pady=5)
         self.generate_button.grid(row=row_idx+2, column=1,padx=5, pady=5)
 
@@ -190,11 +190,11 @@ class BankDepositGUI:
             row_idx = 2
             for cash_amount in self.cash_list:
                 if cash_amount in report_data.total_cash_amount:
-                    tk.Label(self.master, text=f"{report_data.total_cash_amount[cash_amount]['n_amount']}").grid(row=row_idx, column=5, padx=5, pady=5)
-                    tk.Label(self.master, text=f"${'{:.2f}'.format(report_data.total_cash_amount[cash_amount]['each_amount'])}").grid(row=row_idx, column=6, padx=5, pady=5)
+                    tk.Label(self.master, text=f"{report_data.total_cash_amount[cash_amount]['n_amount']}").grid(row=row_idx, column=4, padx=5, pady=5)
+                    tk.Label(self.master, text=f"${'{:.2f}'.format(report_data.total_cash_amount[cash_amount]['each_amount'])}").grid(row=row_idx, column=5, padx=5, pady=5)
                 else:
-                    tk.Label(self.master, text=f"0").grid(row=row_idx, column=5, padx=5, pady=5)
-                    tk.Label(self.master, text=f"${'{:.2f}'.format(0)}").grid(row=row_idx, column=6, padx=5, pady=5)
+                    tk.Label(self.master, text=f"").grid(row=row_idx, column=4, padx=5, pady=5)
+                    tk.Label(self.master, text=f"${'{:.2f}'.format(0)}").grid(row=row_idx, column=5, padx=5, pady=5)
                 row_idx=row_idx+1
             # Adjust the button position
             self.deposit_button.grid(columnspan=2)
