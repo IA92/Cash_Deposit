@@ -36,6 +36,7 @@ class BankDepositGUI:
             self.amount_var[cash_amount] = StringVar()
             self.amount_entry[cash_amount] = tk.Entry(master, textvariable=self.amount_var[cash_amount], width=14)
         self.deposit_button = tk.Button(master, text="Deposit", command=self.deposit)
+        self.delete_button = tk.Button(master, text="Delete", command=self.delete_entry)
         self.generate_button = tk.Button(master, text="Generate", command=self.generate_report)
 
         # Grid widgets
@@ -58,6 +59,7 @@ class BankDepositGUI:
         self.message_text_var = StringVar()
         self.message_text=tk.Label(master, textvariable=self.message_text_var).grid(row=row_idx, column=0, columnspan = 6, padx=5, pady=5)
         self.deposit_button.grid(row=row_idx+1, column=1,padx=5, pady=5)
+        self.delete_button.grid(row=row_idx+1, column=0,padx=5, pady=5)
         self.generate_button.grid(row=row_idx+2, column=1,padx=5, pady=5)
 
         # Use arrow key to navigate the entry
@@ -145,6 +147,29 @@ class BankDepositGUI:
             
             # Show a confirmation message with the total amount deposited
             self.message_text_var.set(f"Deposit Successful, Daily amount deposited: ${total_daily_amount:.2f}")
+
+            # Clear the product var values
+            self.update_value(NULL) #Don't update the message var
+    
+    def delete_entry(self, event=None):
+        # Get the date from the user inputs
+        date = self.date_entry.get_date()
+
+        if date in self.deposit_data:
+            # Remove the entry on the selected date
+            del self.deposit_data[date]
+
+            # Reset the cursor to the top entry
+            self.amount_entry[self.cash_list[0]].focus_set()
+
+            # Set the date to the next day
+            self.date_entry.set_date(self.date_entry.get_date()-timedelta(days=1))
+          
+            # Get entries if exist
+            self.get_entries(event)
+            
+            # Show a confirmation message with the total amount deposited
+            self.message_text_var.set(f"{date.strftime('%A, %d/%m/%Y')} entry deleted successfully")
 
             # Clear the product var values
             self.update_value(NULL) #Don't update the message var
