@@ -236,6 +236,8 @@ def generate_report(data:cash_deposit_struct):
     output_ws.cell(output_r_idx, 1).value = "Total"
     output_ws.cell(output_r_idx, 2).value = f"=SUM(B{output_row_offset+1}:B{output_r_idx-1})"
     output_ws.cell(output_r_idx, 2).number_format = u'"$ "#,##0.00'
+    output_ws.cell(output_r_idx, 15).value = f"=SUM(O{output_row_offset+1}:O{output_r_idx-1})"
+    output_ws.cell(output_r_idx, 15).number_format = u'"$ "#,##0.00'
 
     #Save the spreadsheet
     generated_excel_filename = f"{os.getcwd()}\Report\CashDeposit 2023 - GUI - {banking_date}"
