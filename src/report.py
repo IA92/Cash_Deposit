@@ -211,9 +211,13 @@ def generate_report(data:cash_deposit_struct):
     output_ws.cell(output_r_idx,6).value = "Hall Hire"
     output_ws.cell(output_r_idx,7).value = "Membership"
     output_ws.cell(output_r_idx,8).value = "Restring"
-    output_ws.cell(output_r_idx,9).value = "Locker" 
-    output_ws.cell(output_r_idx,10).value = "Points"
-    output_ws.cell(output_r_idx,11).value = "Total"
+    output_ws.cell(output_r_idx,9).value = "Racket Hire"
+    output_ws.cell(output_r_idx,10).value = "Shuttle"
+    output_ws.cell(output_r_idx,11).value = "Tournament"
+    output_ws.cell(output_r_idx,12).value = "Points"
+    output_ws.cell(output_r_idx,13).value = "Locker"
+    output_ws.cell(output_r_idx,14).value = "Misc"
+    output_ws.cell(output_r_idx,15).value = "Total"
     output_r_idx+=1
 
     #Put in the total amount for each day
@@ -225,8 +229,8 @@ def generate_report(data:cash_deposit_struct):
         output_ws.cell(output_r_idx, 2).value = data.deposit_data[date]["total_daily_amount"]
         output_ws.cell(output_r_idx, 2).number_format = u'"$ "#,##0.00'
         #Add the total
-        output_ws.cell(output_r_idx, 11).value = f"=SUM(D{output_r_idx}:J{output_r_idx})"
-        output_ws.cell(output_r_idx, 11).number_format = u'"$ "#,##0.00'
+        output_ws.cell(output_r_idx, 15).value = f"=SUM(D{output_r_idx}:N{output_r_idx})"
+        output_ws.cell(output_r_idx, 15).number_format = u'"$ "#,##0.00'
         output_r_idx+=1
     #Add the total
     output_ws.cell(output_r_idx, 1).value = "Total"
